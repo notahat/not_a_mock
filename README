@@ -1,0 +1,197 @@
+= Not A Mock
+
+Not A Mock helps RSpec unit testing by letting you replace objects and methods
+with stub versions, and providing assertions you can use to test that methods
+were called correctly.
+
+Other mocking and stubbing libraries force you to set expecations about
+method calls _before_ running the code being tested. (This approach is
+borrowed from Java, where the type system limits things.) In Ruby, there's
+no reason mocking assertions can't work just like other assertions.
+
+Not A Mock currently exists as a Rails plugin, but could easily be adapted
+to work outside of Rails.
+
+See http://notamock.rubyforge.org/ for the latest version.
+
+== Installation
+
+First, install the rspec and rspec_on_rails plugins:
+
+  ruby script/plugin install svn://rubyforge.org/var/svn/rspec/tags/REL_1_0_5/rspec
+  ruby script/plugin install svn://rubyforge.org/var/svn/rspec/tags/REL_1_0_5/rspec_on_rails
+  
+(See http://rspec.rubyforge.org/documentation/rails/install.html for more details.)
+  
+Second, install the Not A Mock plugin:
+
+  ruby script/plugin install svn://rubyforge.org/var/svn/notamock/trunk
+
+Finally, add the following to your project's spec/spec_helper.rb:
+
+  config.mock_with NotAMock::RspecMockFrameworkAdapter
+
+
+== Examples
+
+Here's a simple example to give you the general idea:
+
+  stub = String.stub_instance(:length => 13, :upcase => "HELLO, WORLD!", :gsub => "Goodbye, world!")
+
+  stub.length                    # 13
+  stub.upcase                    # "HELLO, WORLD!"
+  stub.gsub("Hello", "Goodbye")  # "Goodbye, world!"
+
+  stub.should have_been_called.exactly(3).times
+  stub.should have_received(:length).without_args.and_returned(13)
+  stub.should have_received(:upcase).without_args.and_returned("HELLO, WORLD!")
+  stub.should have_received(:gsub).with("Hello", "Goodbye").and_returned("Goodbye, world!")
+
+
+== Stubbing
+
+=== Stubbing Methods
+
+You can replace a method on an object with a stub version like this:
+
+  object.stub_method(:method => return_value)
+  
+Any call to +method+ after this will return +return_value+ without invoking
+the method's usual code.
+
+You can stub multiple methods on an object by calling:
+
+  object.stub_methods(:method_a => return_value, :method_b => return_value, ...)
+
+=== Stubbing Instances
+
+You can also replace an entire object with a stub version like this:
+
+  my_object = MyClass.stub_instance(:method_a => return_value, :method_b => return_value, ...)
+
+The returned +my_object+ is a stub instance of MyClass with the given methods
+defined to provide the corresponding return values.
+
+==== Stubbing ActiveRecord Instances
+
+When you call +stub_instance+ on an ActiveRecord::Base subclass,
+Not A Mock automatically provides an +id+ method and generates an
+id for the object.
+
+
+== Mocking
+
+Not A Mock records method calls in code that you're testing, and lets
+you make assertions about how methods were called.
+
+All calls to stubbed methods and instances are recorded automatically.
+You can ask that calls be recorded to non-stubbed methods by doing
+the following:
+
+  object.log_calls_to(:method_a, :method_b, ...)
+  
+You can access the call log for an object with the +call_log+ method.
+  
+=== Message Assertions
+
+You can assert that objects should have received particular messages:
+
+  object.should have_received(:message)
+  object.should_not have_received(:message)
+
+Further restrictions cannot be added after +should_not have_received+.
+
+You can also make general assertions about whether an object should have
+received any messages:
+
+  object.should have_been_called
+  object.should_not have_been_called
+  
+=== Argument Assertions
+
+You can assert that a particular call was made with or without arguments:
+
+  object.should have_received(:message).with(arg1, arg2, ...)
+  object.should have_received(:message).without_args
+
+=== Return Value Assertions
+
+  object.should have_received(:message).and_returned(return_value)
+  object.should have_received(:message).with(arg1, arg2, ...).and_returned(return_value)
+
+=== Count Assertions
+
+  object.should have_received(:message).once
+  object.should have_received(:message).with(arg1, arg2, ...).twice
+  object.should have_received(:message).with(arg1, arg2, ...).and_returned(return_value).exactly(n).times
+  object.should have_been_called.exactly(n).times
+
+Any count specifier must go at the end of the expression.
+
+The exception to this rule is +once+, which allows things like this:
+
+  object.should have_received(:message).once.with(arg1, arg2, ...).and_returned(return_value)
+
+which verifies that +message+ was called only once, and that call had
+the given arguments and return value.
+
+Note that this is subtly different from:
+
+  object.should have_received(:message).with(arg1, arg2, ...).and_returned(return_value).once
+  
+which verifies that +message+ was called with the given arguments and
+return value only once. It may, however, have been called with different
+arguments and return value at other times.
+
+== Bugs
+
+This:
+
+  object = MyClass.stub_instance(:method => return_value)
+  
+should be equivalent to:
+
+  object = MyClass.stub_instance
+  object.stub_instance(:method => return_value)
+  
+Due to implementation quirks, the latter doesn't work properly.
+
+== To Do
+
+=== Better Error Messages
+
+Error messages are pretty smart already. If I call:
+
+  object.should have_received(:gsub).with("Hello", "Goodbye").and_returned("Goodbye, world!")
+  
+I might get an error like:
+
+  Object received gsub, but not with arguments ["Hello", "Goodbye"].
+
+It would be much more useful if the error message told you the arguments
+it actually received as well.
+  
+=== Order Assertions
+
+Top of the list is to allow something like this:
+
+  in_order do
+    object_a.should have_received(:message_a)
+    object_b.should have_received(:message_b)
+    object_a.should have_received(:message_c)
+  end
+  
+This requires recording calls in a central place rather than in individual
+objects.
+
+=== Smarter ActiveRecord stubbing
+
+I often find myself doing something like this before a test:
+
+  @comment  = Comment.stub_instance(:body => "Great!")
+  @comments = Object.stub_instance(:find => [@comment])
+  @article  = Article.stub_instance(:title => "Hello, world!", :comments => @comments)
+  Article.stub_method(:find => @article)
+
+I'd like to find a way to make this neater, auto-generate the stub
+relationship, etc.
