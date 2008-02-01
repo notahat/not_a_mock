@@ -1,87 +1,90 @@
-# $Id: matchers_spec.rb 986 2007-05-09 07:48:34Z pete $
-# vim: ts=2 sw=2 ai expandtab
-
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-require 'not_a_mock'
+require 'notamock'
 
-class CallLoggerStub
-  def initialize(*call_log)
-    @call_log = call_log
+class TrackedClass < Object
+  def initialize(*calls)
+    calls.each do |call|
+      Notamock::CallRecorder.instance.calls << call.merge(:object => self)
+    end
   end
   
-  attr_reader :call_log
-  
   def inspect
-    "CallLoggerStub"
+    "TrackedClass"
   end
 end
 
-describe NotAMock::Matchers::AnythingMatcher do
+describe Notamock::Matchers::AnythingMatcher do
   
   it "should match if a method was called" do
-    @object = CallLoggerStub.new({ :method => :length, :args => [], :result => nil })
+    @object = TrackedClass.new({ :method => :length, :args => [], :result => nil })
     @matcher = have_been_called
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub was called"
+    @matcher.negative_failure_message.should == "TrackedClass was called"
   end
 
   it "should not match if a method wasn't called" do
-    @object = CallLoggerStub.new()
+    @object = TrackedClass.new
     @matcher = have_been_called
     @matcher.matches?(@object).should be_false
-    @matcher.failure_message.should == "CallLoggerStub was never called"
+    @matcher.failure_message.should == "TrackedClass was never called"
   end
     
-end
-
-describe NotAMock::Matchers::MethodMatcher do
-  
-  before do
-    @object = CallLoggerStub.new({ :method => :length, :args => [], :result => 13 })
+  after do
+    Notamock::CallRecorder.instance.reset
   end
   
+end
+
+describe Notamock::Matchers::MethodMatcher do
+  
   it "should match a called method" do
+    @object = TrackedClass.new({ :method => :length, :args => [], :result => nil })
     @matcher = have_received(:length)
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received length"
+    @matcher.negative_failure_message.should == "TrackedClass received length"
   end
   
   it "should not match an uncalled method" do
+    @object = TrackedClass.new
     @matcher = have_received(:width)
     @matcher.matches?(@object).should be_false
-    @matcher.failure_message.should == "CallLoggerStub didn't receive width"
+    @matcher.failure_message.should == "TrackedClass didn't receive width"
   end
     
+  after do
+    Notamock::CallRecorder.instance.reset
+  end
+  
 end
 
-describe NotAMock::Matchers::ArgsMatcher, " matching calls with arguments " do
+describe Notamock::Matchers::ArgsMatcher, " matching calls with arguments " do
   
   before do
-    @object = CallLoggerStub.new(
-      { :method => :length, :args => [1, 2, 3], :result => nil },
-      { :method => :width,  :args => [3, 2, 1], :result => nil }
-    )
+    @object = TrackedClass.new({ :method => :length, :args => [1, 2, 3], :result => nil })
   end
   
   it "should match a called method with the correct arguments" do
     @matcher = have_received(:length).with(1, 2, 3)
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received length, with args [1, 2, 3]"
+    @matcher.negative_failure_message.should == "TrackedClass received length, with args [1, 2, 3]"
   end
   
   it "should not match a called method with the wrong arguments" do
-    @matcher = have_received(:width).with(1, 2, 3)
+    @matcher = have_received(:length).with(3, 2, 1)
     @matcher.matches?(@object).should be_false
-    @matcher.failure_message.should == "CallLoggerStub received width, but not with args [1, 2, 3]"
+    @matcher.failure_message.should == "TrackedClass received length, but not with args [3, 2, 1]"
   end
 
+  after do
+    Notamock::CallRecorder.instance.reset
+  end
+  
 end
 
-
-describe NotAMock::Matchers::ArgsMatcher, " matching calls without arguments" do
+describe Notamock::Matchers::ArgsMatcher, " matching calls without arguments" do
   
   before do
-    @object = CallLoggerStub.new(
+    @object = TrackedClass.new(
       { :method => :length, :args => [1, 2, 3], :result => nil },
       { :method => :width,  :args => [], :result => nil }
     )    
@@ -90,21 +93,25 @@ describe NotAMock::Matchers::ArgsMatcher, " matching calls without arguments" do
   it "should match a method called without arguments" do
     @matcher = have_received(:width).without_args
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received width, without args"    
+    @matcher.negative_failure_message.should == "TrackedClass received width, without args"    
   end
   
   it "should not match a method called with arguments" do
     @matcher = have_received(:length).without_args
     @matcher.matches?(@object).should be_false
-    @matcher.failure_message.should == "CallLoggerStub received length, but not without args"    
+    @matcher.failure_message.should == "TrackedClass received length, but not without args"    
+  end
+  
+  after do
+    Notamock::CallRecorder.instance.reset
   end
   
 end
 
-describe NotAMock::Matchers::ResultMatcher do
+describe Notamock::Matchers::ResultMatcher do
   
   before do
-    @object = CallLoggerStub.new(
+    @object = TrackedClass.new(
       { :method => :length, :args => [], :result => 13 },
       { :method => :width,  :args => [], :result => 42 }
     )    
@@ -113,21 +120,25 @@ describe NotAMock::Matchers::ResultMatcher do
   it "should match a method that returned the correct result" do
     @matcher = have_received(:length).and_returned(13)
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received length, and returned 13"
+    @matcher.negative_failure_message.should == "TrackedClass received length, and returned 13"
   end
   
   it "should not match a method the returned the wrong result" do
     @matcher = have_received(:width).and_returned(13)
     @matcher.matches?(@object).should be_false
-    @matcher.failure_message.should == "CallLoggerStub received width, but didn't return 13"
+    @matcher.failure_message.should == "TrackedClass received width, but didn't return 13"
   end
     
+  after do
+    Notamock::CallRecorder.instance.reset
+  end
+  
 end
 
-describe NotAMock::Matchers::TimesMatcher do
+describe Notamock::Matchers::TimesMatcher do
   
   before do
-    @object = CallLoggerStub.new(
+    @object = TrackedClass.new(
       { :method => :once,   :args => [], :result => nil },
       { :method => :twice,  :args => [], :result => nil },
       { :method => :twice,  :args => [], :result => nil },
@@ -140,25 +151,29 @@ describe NotAMock::Matchers::TimesMatcher do
   it "should match a method that was called once" do
     @matcher = have_received(:once).once
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received once, once"
+    @matcher.negative_failure_message.should == "TrackedClass received once, once"
   end
 
   it "should match a method that was called twice" do
     @matcher = have_received(:twice).twice
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received twice, twice"
+    @matcher.negative_failure_message.should == "TrackedClass received twice, twice"
   end
   
   it "should match a method that was called 3 times" do
     @matcher = have_received(:thrice).exactly(3).times
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received thrice, 3 times"
+    @matcher.negative_failure_message.should == "TrackedClass received thrice, 3 times"
   end  
   
   it "should not match a method a method that was called the wrong number of times" do
     @matcher = have_received(:thrice).once
     @matcher.matches?(@object).should be_false
-    @matcher.failure_message.should == "CallLoggerStub received thrice, but 3 times"
+    @matcher.failure_message.should == "TrackedClass received thrice, but 3 times"
+  end
+  
+  after do
+    Notamock::CallRecorder.instance.reset
   end
   
 end
@@ -166,19 +181,23 @@ end
 describe "A chain of matchers" do
   
   before do
-    @object = CallLoggerStub.new({ :method => :length, :args => [1, 2, 3], :result => 42 })
+    @object = TrackedClass.new({ :method => :length, :args => [1, 2, 3], :result => 42 })
   end
   
   it "should match the correct method, args, and result" do
     @matcher = have_received(:length).with(1, 2, 3).and_returned(42)
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "CallLoggerStub received length, with args [1, 2, 3], and returned 42"
+    @matcher.negative_failure_message.should == "TrackedClass received length, with args [1, 2, 3], and returned 42"
   end
   
   it "should not match the correct method, but with the incorrect args" do
     @matcher = have_received(:length).with(3, 2, 1).and_returned(42)
     @matcher.matches?(@object).should be_false
-    @matcher.failure_message.should == "CallLoggerStub received length, but not with args [3, 2, 1]"
+    @matcher.failure_message.should == "TrackedClass received length, but not with args [3, 2, 1]"
+  end
+  
+  after do
+    Notamock::CallRecorder.instance.reset
   end
   
 end

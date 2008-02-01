@@ -1,10 +1,7 @@
-# $Id: stub_method_spec.rb 992 2007-05-17 05:57:58Z pete $
-# vim: ts=2 sw=2 ai expandtab
-
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-require 'not_a_mock'
+require 'notamock'
 
-describe "An object with an existing instance method stubbed" do
+describe "A stubbed method replacing an existing instance method" do
   
   before do
     @object = "Hello, world!"
@@ -16,18 +13,39 @@ describe "An object with an existing instance method stubbed" do
   end
   
   it "should return the original result after stubbing is removed" do
-    @object.remove_logging_and_stubbing
+    @object.unstub_method(:length)
     @object.length.should == 13
   end
   
-  it "should return the original result after all stubbing is removed" do
-    Object.remove_all_logging_and_stubbing
+  it "should return the original result after a reset" do
+    Notamock::Stubber.instance.reset
     @object.length.should == 13
   end
   
+  it "should return the new result if re-stubbed" do
+    @object.stub_method(:length => 24)
+    @object.length.should == 24
+  end
+  
+  it "should record a call to the stubbed method" do
+    @object.length
+    Notamock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 42)
+  end
+  
+  it "should return a call to the stubbed method if re-stubbed" do
+    @object.stub_method(:length => 24)
+    @object.length
+    Notamock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 24)
+  end
+  
+  after do
+    Notamock::CallRecorder.instance.reset
+    Notamock::Stubber.instance.reset
+  end
+
 end
 
-describe "An object with a new instance method stubbed" do
+describe "A stubbed method with no existing instance method" do
   
   before do
     @object = "Hello, world!"
@@ -39,18 +57,28 @@ describe "An object with a new instance method stubbed" do
   end
   
   it "should raise a NoMethodError when the method is called after stubbing is removed" do
-    @object.remove_logging_and_stubbing
+    @object.unstub_method(:blah)
     lambda { @object.blah }.should raise_error(NoMethodError)
   end
   
   it "should raise a NoMethodError when the method is called after all stubbing is removed" do
-    Object.remove_all_logging_and_stubbing
+    Notamock::Stubber.instance.reset
     lambda { @object.blah }.should raise_error(NoMethodError)
+  end
+  
+  it "should record a call to the stubbed method" do
+    @object.blah
+    Notamock::CallRecorder.instance.calls.should include(:object => @object, :method => :blah, :args => [], :result => 42)
+  end
+  
+  after do
+    Notamock::CallRecorder.instance.reset
+    Notamock::Stubber.instance.reset
   end
   
 end
 
-describe "A class with a class method stubbed" do
+describe "A stubbed class method" do
   
   before do
     Time.stub_method(:now => 42)
@@ -61,26 +89,40 @@ describe "A class with a class method stubbed" do
   end
   
   it "should return the original result after stubbing is removed" do
-    Time.remove_logging_and_stubbing
+    Time.unstub_method(:now)
     Time.now.should_not == 42
   end
   
-  it "should return the original result after all stubbing is removed" do
-    Object.remove_all_logging_and_stubbing
+  it "should return the original result after a reset" do
+    Notamock::Stubber.instance.reset
     Time.now.should_not == 42
   end
 
+  after do
+    Notamock::CallRecorder.instance.reset
+    Notamock::Stubber.instance.reset
+  end
+  
 end
 
-describe "An object with a boolean instance method stubbed" do
+describe "Object#stub_method" do
   
-  before do
+  it "should stub a method with a name ending in '?'" do
     @object = "Hello, world!"
     @object.stub_method(:is_great? => true)
-  end
-  
-  it "should return the stubbed result" do
     @object.is_great?.should be_true
   end
+  
+  it "should stub the []= method" do
+    @object = Array.new
+    @object.stub_method(:[]= => nil)
+    @object[0] = 7
+    @object.length.should == 0
+  end
 
+  after do
+    Notamock::CallRecorder.instance.reset
+    Notamock::Stubber.instance.reset
+  end
+  
 end

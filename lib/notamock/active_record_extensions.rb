@@ -5,7 +5,7 @@ module ActiveRecord # :nodoc:
       @@__stub_object_id ||= 1000
       @@__stub_object_id += 1
       methods = methods.merge(:id => @@__stub_object_id)
-      NotAMock::Stub.new(self, methods)
+      Notamock::Stub.new(self, methods)
     end
     
   end
