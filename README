@@ -74,4 +74,8 @@ Finally, add the following to your project's spec/spec_helper.rb:
 
   config.mock_with Notamock::RspecMockFrameworkAdapter
 
+== Contributors
 
+Pete Yandell
+Steve Hayes
+Pat Allan
