@@ -1,4 +1,4 @@
-module Notamock
+module NotAMock
   module Matchers
     class CallMatcher
   

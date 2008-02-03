@@ -1,6 +1,6 @@
-require 'notamock/matchers/call_matcher'
+require 'not_a_mock/matchers/call_matcher'
 
-module Notamock
+module NotAMock
   module Matchers
     # Matcher for +once+, +twice+, and
     #   exactly(n).times

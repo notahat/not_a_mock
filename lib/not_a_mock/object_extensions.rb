@@ -3,7 +3,7 @@ class Object
   # FIXME: Write docs!
   def track_methods(*methods)
     methods.each do |method|
-      Notamock::CallRecorder.instance.track_method(self, method)
+      NotAMock::CallRecorder.instance.track_method(self, method)
     end
   end
   alias_method(:track_method, :track_methods)
@@ -12,7 +12,7 @@ class Object
   # FIXME: Write docs!
   def untrack_methods(*methods)
     methods.each do |method|
-      Notamock::CallRecorder.instance.untrack_method(self, method)
+      NotAMock::CallRecorder.instance.untrack_method(self, method)
     end
   end
   alias_method(:untrack_method, :untrack_methods)
@@ -20,10 +20,10 @@ class Object
   # FIXME: Write docs!
   def stub_methods(methods)
     methods.each do |method, result|
-      Notamock::CallRecorder.instance.untrack_method(self, method)
-      Notamock::Stubber.instance.unstub_method(self, method)
-      Notamock::Stubber.instance.stub_method(self, method, result)
-      Notamock::CallRecorder.instance.track_method(self, method)
+      NotAMock::CallRecorder.instance.untrack_method(self, method)
+      NotAMock::Stubber.instance.unstub_method(self, method)
+      NotAMock::Stubber.instance.stub_method(self, method, result)
+      NotAMock::CallRecorder.instance.track_method(self, method)
     end
   end
   alias_method(:stub_method, :stub_methods)
@@ -31,8 +31,8 @@ class Object
   # FIXME: Write docs!
   def unstub_methods(*methods)
     methods.each do |method, result|
-      Notamock::CallRecorder.instance.untrack_method(self, method)
-      Notamock::Stubber.instance.unstub_method(self, method)
+      NotAMock::CallRecorder.instance.untrack_method(self, method)
+      NotAMock::Stubber.instance.unstub_method(self, method)
     end
   end
   alias_method(:unstub_method, :unstub_methods)
@@ -41,7 +41,7 @@ class Object
     # FIXME: Write docs!
     # FIXME: Should this be a method on Class?
     def stub_instance(methods = {})
-      Notamock::Stub.new(self, methods)
+      NotAMock::Stub.new(self, methods)
     end
   end
   

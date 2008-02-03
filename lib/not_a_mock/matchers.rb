@@ -1,4 +1,4 @@
-module Notamock
+module NotAMock
   # == Message Assertions
   # 
   # You can assert that an object should have received particular messages:
@@ -58,9 +58,9 @@ module Notamock
 end
 
 def have_been_called
-  Notamock::Matchers::AnythingMatcher.new
+  NotAMock::Matchers::AnythingMatcher.new
 end
 
 def have_received(method)
-  Notamock::Matchers::MethodMatcher.new(method)
+  NotAMock::Matchers::MethodMatcher.new(method)
 end

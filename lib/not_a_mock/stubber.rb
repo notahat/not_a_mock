@@ -1,7 +1,7 @@
 require 'singleton'
-require 'notamock/object_extensions'
+require 'not_a_mock/object_extensions'
 
-module Notamock
+module NotAMock
   # The Stubber is a singleton that keeps track of all the stub methods
   # installed in any object.
   class Stubber

@@ -1,5 +1,5 @@
-module Notamock
-  # Instances returned by Object.stub_instance are Notamock::Stub objects.
+module NotAMock
+  # Instances returned by Object.stub_instance are NotAMock::Stub objects.
   class Stub
     
     def initialize(object_name, methods = {})

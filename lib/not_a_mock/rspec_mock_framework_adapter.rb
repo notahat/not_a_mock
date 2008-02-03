@@ -1,4 +1,4 @@
-module Notamock
+module NotAMock
   module RspecMockFrameworkAdapter
     
     def setup_mocks_for_rspec
@@ -8,8 +8,8 @@ module Notamock
     end
     
     def teardown_mocks_for_rspec
-      Notamock::CallRecorder.instance.reset
-      Notamock::Stubber.instance.reset
+      NotAMock::CallRecorder.instance.reset
+      NotAMock::Stubber.instance.reset
     end
     
   end

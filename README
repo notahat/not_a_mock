@@ -1,8 +1,8 @@
-= notamock
+= Not A Mock
 
 A cleaner and DRYer alternative to mocking and stubbing with RSpec.
 
-http://notahat.com/notamock/
+http://notahat.com/not_a_mock
 
 == A Quick Introduction
 
@@ -18,7 +18,7 @@ they took, their results, etc.
   object.should have_received(:length).without_args.and_returned(42)
   object.should have_received(:name).twice
   
-See Notamock::Matchers for an explanation of the available assertions, plus
+See NotAMock::Matchers for an explanation of the available assertions, plus
 Object#track_methods and Object#untrack_methods.
   
 === Stubbing
@@ -56,7 +56,7 @@ id for the object.
 
 == Installation
 
-(The following describes using Notamock with Rails. It should also be possible
+(The following describes using NotAMock with Rails. It should also be possible
 to use it outside of Rails, but I haven't tried it.)
 
 First, install the rspec and rspec_on_rails plugins:
@@ -66,16 +66,16 @@ First, install the rspec and rspec_on_rails plugins:
 
 (See http://rspec.info/documentation/rails/install.html for more details.)
   
-Second, install the Notamock plugin:
+Second, install the not_a_mock plugin:
 
-  ruby script/plugin install http://svn.notahat.com/notamock/trunk
+  ruby script/plugin install http://svn.notahat.com/not_a_mock/trunk
 
 Finally, add the following to your project's spec/spec_helper.rb:
 
-  config.mock_with Notamock::RspecMockFrameworkAdapter
+  config.mock_with NotAMock::RspecMockFrameworkAdapter
 
-== Contributors
+== Contributing
 
-Pete Yandell
-Steve Hayes
-Pat Allan
+Send bugs, patches, and suggestions to Pete Yandell (pete@notahat.com)
+
+Thanks to Pat Allan and Steve Hayes for contributing patches.

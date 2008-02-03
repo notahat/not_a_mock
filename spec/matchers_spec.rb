@@ -1,10 +1,10 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-require 'notamock'
+require 'not_a_mock'
 
 class TrackedClass < Object
   def initialize(*calls)
     calls.each do |call|
-      Notamock::CallRecorder.instance.calls << call.merge(:object => self)
+      NotAMock::CallRecorder.instance.calls << call.merge(:object => self)
     end
   end
   
@@ -13,7 +13,7 @@ class TrackedClass < Object
   end
 end
 
-describe Notamock::Matchers::AnythingMatcher do
+describe NotAMock::Matchers::AnythingMatcher do
   
   it "should match if a method was called" do
     @object = TrackedClass.new({ :method => :length, :args => [], :result => nil })
@@ -30,12 +30,12 @@ describe Notamock::Matchers::AnythingMatcher do
   end
     
   after do
-    Notamock::CallRecorder.instance.reset
+    NotAMock::CallRecorder.instance.reset
   end
   
 end
 
-describe Notamock::Matchers::MethodMatcher do
+describe NotAMock::Matchers::MethodMatcher do
   
   it "should match a called method" do
     @object = TrackedClass.new({ :method => :length, :args => [], :result => nil })
@@ -52,12 +52,12 @@ describe Notamock::Matchers::MethodMatcher do
   end
     
   after do
-    Notamock::CallRecorder.instance.reset
+    NotAMock::CallRecorder.instance.reset
   end
   
 end
 
-describe Notamock::Matchers::ArgsMatcher, " matching calls with arguments " do
+describe NotAMock::Matchers::ArgsMatcher, " matching calls with arguments " do
   
   before do
     @object = TrackedClass.new({ :method => :length, :args => [1, 2, 3], :result => nil })
@@ -76,12 +76,12 @@ describe Notamock::Matchers::ArgsMatcher, " matching calls with arguments " do
   end
 
   after do
-    Notamock::CallRecorder.instance.reset
+    NotAMock::CallRecorder.instance.reset
   end
   
 end
 
-describe Notamock::Matchers::ArgsMatcher, " matching calls without arguments" do
+describe NotAMock::Matchers::ArgsMatcher, " matching calls without arguments" do
   
   before do
     @object = TrackedClass.new(
@@ -103,12 +103,12 @@ describe Notamock::Matchers::ArgsMatcher, " matching calls without arguments" do
   end
   
   after do
-    Notamock::CallRecorder.instance.reset
+    NotAMock::CallRecorder.instance.reset
   end
   
 end
 
-describe Notamock::Matchers::ResultMatcher do
+describe NotAMock::Matchers::ResultMatcher do
   
   before do
     @object = TrackedClass.new(
@@ -130,12 +130,12 @@ describe Notamock::Matchers::ResultMatcher do
   end
     
   after do
-    Notamock::CallRecorder.instance.reset
+    NotAMock::CallRecorder.instance.reset
   end
   
 end
 
-describe Notamock::Matchers::TimesMatcher do
+describe NotAMock::Matchers::TimesMatcher do
   
   before do
     @object = TrackedClass.new(
@@ -173,7 +173,7 @@ describe Notamock::Matchers::TimesMatcher do
   end
   
   after do
-    Notamock::CallRecorder.instance.reset
+    NotAMock::CallRecorder.instance.reset
   end
   
 end
@@ -197,7 +197,7 @@ describe "A chain of matchers" do
   end
   
   after do
-    Notamock::CallRecorder.instance.reset
+    NotAMock::CallRecorder.instance.reset
   end
   
 end

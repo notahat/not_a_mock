@@ -15,7 +15,7 @@ end
 desc "Generate documentation for the notamock plugin."
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'Notamock'
+  rdoc.title    = 'NotAMock'
   rdoc.options << '--line-numbers' << '--inline-source'
   rdoc.rdoc_files.include('README')
   rdoc.rdoc_files.include('MIT-LICENSE')

@@ -1,7 +1,7 @@
 require 'singleton'
-require 'notamock/object_extensions'
+require 'not_a_mock/object_extensions'
 
-module Notamock
+module NotAMock
   # The CallRecorder is a singleton that keeps track of all the call
   # recording hooks installed, and keeps a central record of calls.
   class CallRecorder

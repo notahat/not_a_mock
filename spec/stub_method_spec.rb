@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-require 'notamock'
+require 'not_a_mock'
 
 describe "A stubbed method replacing an existing instance method" do
   
@@ -18,7 +18,7 @@ describe "A stubbed method replacing an existing instance method" do
   end
   
   it "should return the original result after a reset" do
-    Notamock::Stubber.instance.reset
+    NotAMock::Stubber.instance.reset
     @object.length.should == 13
   end
   
@@ -29,18 +29,18 @@ describe "A stubbed method replacing an existing instance method" do
   
   it "should record a call to the stubbed method" do
     @object.length
-    Notamock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 42)
+    NotAMock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 42)
   end
   
   it "should return a call to the stubbed method if re-stubbed" do
     @object.stub_method(:length => 24)
     @object.length
-    Notamock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 24)
+    NotAMock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 24)
   end
   
   after do
-    Notamock::CallRecorder.instance.reset
-    Notamock::Stubber.instance.reset
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
   end
 
 end
@@ -62,18 +62,18 @@ describe "A stubbed method with no existing instance method" do
   end
   
   it "should raise a NoMethodError when the method is called after all stubbing is removed" do
-    Notamock::Stubber.instance.reset
+    NotAMock::Stubber.instance.reset
     lambda { @object.blah }.should raise_error(NoMethodError)
   end
   
   it "should record a call to the stubbed method" do
     @object.blah
-    Notamock::CallRecorder.instance.calls.should include(:object => @object, :method => :blah, :args => [], :result => 42)
+    NotAMock::CallRecorder.instance.calls.should include(:object => @object, :method => :blah, :args => [], :result => 42)
   end
   
   after do
-    Notamock::CallRecorder.instance.reset
-    Notamock::Stubber.instance.reset
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
   end
   
 end
@@ -94,13 +94,13 @@ describe "A stubbed class method" do
   end
   
   it "should return the original result after a reset" do
-    Notamock::Stubber.instance.reset
+    NotAMock::Stubber.instance.reset
     Time.now.should_not == 42
   end
 
   after do
-    Notamock::CallRecorder.instance.reset
-    Notamock::Stubber.instance.reset
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
   end
   
 end
@@ -121,8 +121,8 @@ describe "Object#stub_method" do
   end
 
   after do
-    Notamock::CallRecorder.instance.reset
-    Notamock::Stubber.instance.reset
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
   end
   
 end

@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-require 'notamock'
+require 'not_a_mock'
 
 class ExampleActiveRecord < ActiveRecord::Base
 end
@@ -16,8 +16,8 @@ describe "A stubbed ActiveRecord object" do
   end
   
   after do
-    Notamock::CallRecorder.instance.reset
-    Notamock::Stubber.instance.reset
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
   end
   
 end

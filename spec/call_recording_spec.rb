@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-require 'notamock'
+require 'not_a_mock'
 
 class TrackedClass
   def my_method(argument)
@@ -10,7 +10,7 @@ end
 describe "A recorded method" do
   
   before do
-    @recorder = Notamock::CallRecorder.instance
+    @recorder = NotAMock::CallRecorder.instance
     @object = TrackedClass.new
     @object.track_method(:my_method)
   end

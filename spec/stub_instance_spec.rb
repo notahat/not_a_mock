@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
-require 'notamock'
+require 'not_a_mock'
 
 describe "A stub instance" do
   
@@ -25,7 +25,7 @@ describe "A stub instance" do
   
   it "should record a call to a stubbed method" do
     @object.length
-    Notamock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 42)
+    NotAMock::CallRecorder.instance.calls.should include(:object => @object, :method => :length, :args => [], :result => 42)
   end
   
   it "should allow adding of new stubbed methods" do
@@ -34,8 +34,8 @@ describe "A stub instance" do
   end
   
   after do
-    Notamock::CallRecorder.instance.reset
-    Notamock::Stubber.instance.reset
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
   end 
   
 end
