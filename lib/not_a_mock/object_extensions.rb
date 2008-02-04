@@ -1,6 +1,10 @@
 class Object
   
-  # FIXME: Write docs!
+  # Call this on any object or class with a list of method names. Any future
+  # calls to those methods will be recorded in NotAMock::CallRecorder.
+  #
+  # See NotAMock::Matchers for info on how to test which methods have been
+  # called, with what arguments, etc.
   def track_methods(*methods)
     methods.each do |method|
       NotAMock::CallRecorder.instance.track_method(self, method)
@@ -9,7 +13,7 @@ class Object
   alias_method(:track_method, :track_methods)
   alias_method(:log_calls_to, :track_methods)  # For backwards compatibility.
   
-  # FIXME: Write docs!
+  # Stop recording calls for the given methods.
   def untrack_methods(*methods)
     methods.each do |method|
       NotAMock::CallRecorder.instance.untrack_method(self, method)
@@ -17,7 +21,12 @@ class Object
   end
   alias_method(:untrack_method, :untrack_methods)
   
-  # FIXME: Write docs!
+  # Takes a hash of method names mapped to results, and replaces each named
+  # method on this object with a stub version returning the corresponding result.
+  #
+  # Calls to stubbed methods are recorded in the NotAMock::CallRecorder,
+  # so you can later make assertions about them as described in
+  # NotAMock::Matchers.
   def stub_methods(methods)
     methods.each do |method, result|
       NotAMock::CallRecorder.instance.untrack_method(self, method)
@@ -28,7 +37,8 @@ class Object
   end
   alias_method(:stub_method, :stub_methods)
   
-  # FIXME: Write docs!
+  # Takes a hash of method names mapped to exceptions, and replaces each named
+  # method on this object with a stub version returning the corresponding exception.
   def stub_methods_to_raise(methods)
     methods.each do |method, exception|
       NotAMock::CallRecorder.instance.untrack_method(self, method)
@@ -39,7 +49,8 @@ class Object
   end
   alias_method(:stub_method_to_raise, :stub_methods_to_raise)
   
-  # FIXME: Write docs!
+  # Removes the stubbed versions of the given methods and restores the
+  # original methods.
   def unstub_methods(*methods)
     methods.each do |method, result|
       NotAMock::CallRecorder.instance.untrack_method(self, method)
@@ -49,8 +60,9 @@ class Object
   alias_method(:unstub_method, :unstub_methods)
   
   class << self
-    # FIXME: Write docs!
-    # FIXME: Should this be a method on Class?
+    # Called on a class, creates a stub instance of that class. Takes a hash of
+    # method names and their returns values, and creates those methods on the new
+    # stub instance.
     def stub_instance(methods = {})
       NotAMock::Stub.new(self, methods)
     end
