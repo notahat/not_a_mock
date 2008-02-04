@@ -1,5 +1,12 @@
 == To Do
 
+=== Recording calls that throw exceptions
+
+Currently calls to methods that throw exceptions are not recorded. It would
+be good if they were, and if assertions could be made against them, e.g.
+
+  object.should have_received(:gsub).and_raised(ArgumentError)
+  
 === Stubbing and recording of methods that take blocks
 
 You can't stub or record calls for methods that take blocks. This is very
