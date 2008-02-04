@@ -15,6 +15,11 @@ describe "A stubbed ActiveRecord object" do
     @example.id.should be_an_instance_of(Fixnum)
   end
   
+  it "should return the id for to_param" do
+    lambda { @example.to_param }.should_not raise_error(NoMethodError)
+    @example.to_param.should be_an_instance_of(Fixnum)
+  end
+  
   after do
     NotAMock::CallRecorder.instance.reset
     NotAMock::Stubber.instance.reset
