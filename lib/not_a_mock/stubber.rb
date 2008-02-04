@@ -20,7 +20,17 @@ module NotAMock
         add_hook(object, method, result)
       end
     end
-  
+    
+    # Stub +method+ on +object+ to return +result+.
+    #
+    # You should call Object#stub_methods_to_raise rather than calling this directly.
+    def stub_method_to_raise(object, method, exception)
+      unless @stubbed_methods.include?([object, method])
+        @stubbed_methods << [object, method]
+        add_exception_hook(object, method, exception)
+      end
+    end
+    
     # Remove the stubbed +method+ on +object+.
     #
     # You should call Object#unstub_methods rather than calling this directly.
@@ -46,6 +56,13 @@ module NotAMock
         define_method(method) {|*args| result }
       end
     end
+    
+    def add_exception_hook(object, method, exception)
+      object.meta_eval do
+        alias_method("__unstubbed_#{method}", method) if object.methods.include?(method.to_s)
+        define_method(method) {|*args| raise exception }
+      end
+    end      
   
     def remove_hook(object, method)
       object.meta_eval do

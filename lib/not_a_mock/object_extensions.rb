@@ -29,6 +29,17 @@ class Object
   alias_method(:stub_method, :stub_methods)
   
   # FIXME: Write docs!
+  def stub_methods_to_raise(methods)
+    methods.each do |method, exception|
+      NotAMock::CallRecorder.instance.untrack_method(self, method)
+      NotAMock::Stubber.instance.unstub_method(self, method)
+      NotAMock::Stubber.instance.stub_method_to_raise(self, method, exception)
+      NotAMock::CallRecorder.instance.track_method(self, method)
+    end
+  end
+  alias_method(:stub_method_to_raise, :stub_methods_to_raise)
+  
+  # FIXME: Write docs!
   def unstub_methods(*methods)
     methods.each do |method, result|
       NotAMock::CallRecorder.instance.untrack_method(self, method)

@@ -105,6 +105,30 @@ describe "A stubbed class method" do
   
 end
 
+describe "A method stubbed to raise an exception" do
+  
+  before do
+    @object = "Hello, world!"
+    @object.stub_method_to_raise(:length => ArgumentError)
+  end
+
+  it "should raise the exception when called" do
+    lambda { @object.length }.should raise_error(ArgumentError)  
+  end
+  
+  it "should return the original result after stubbing is removed" do
+    @object.unstub_method(:length)
+    @object.length.should == 13
+  end
+  
+  after do
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
+  end
+  
+end
+
+
 describe "Object#stub_method" do
   
   it "should stub a method with a name ending in '?'" do
