@@ -63,6 +63,7 @@ First, install the rspec and rspec_on_rails plugins:
 
   ruby script/plugin install http://rspec.rubyforge.org/svn/tags/CURRENT/rspec
   ruby script/plugin install http://rspec.rubyforge.org/svn/tags/CURRENT/rspec_on_rails
+  ruby script/generate rspec
 
 (See http://rspec.info/documentation/rails/install.html for more details.)
   
