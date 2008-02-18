@@ -12,7 +12,9 @@ module NotAMock
     end
   
     # Stub +method+ on +object+ to evalutate +block+ and return the result.
-    def stub_method(object, method, &block)
+    # 
+    # You should call Object#stub_method rathing than calling this directly.
+    def stub_method(object, method, &block) #:nodoc:
       unless @stubbed_methods.include?([object, method])
         @stubbed_methods << [object, method]
         add_hook(object, method, &block)
@@ -22,7 +24,7 @@ module NotAMock
     # Remove the stubbed +method+ on +object+.
     #
     # You should call Object#unstub_methods rather than calling this directly.
-    def unstub_method(object, method)
+    def unstub_method(object, method) #:nodoc:
       if @stubbed_methods.delete([object, method])
         remove_hook(object, method)
       end

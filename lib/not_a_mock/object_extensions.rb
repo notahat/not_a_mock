@@ -25,6 +25,10 @@ class Object
   # object with a stub version that evaluates the block and returns the result.
   #
   # If passed a hash, this is an alias for stub_methods.
+  #
+  # Calls to stubbed methods are recorded in the NotAMock::CallRecorder,
+  # so you can later make assertions about them as described in
+  # NotAMock::Matchers.
   def stub_method(method, &block)
     case method
       when Symbol
@@ -45,7 +49,7 @@ class Object
   # Calls to stubbed methods are recorded in the NotAMock::CallRecorder,
   # so you can later make assertions about them as described in
   # NotAMock::Matchers.
-  def stub_methods(methods, &block)
+  def stub_methods(methods)
     methods.each do |method, result|
       stub_method(method) {|*args| result }
     end

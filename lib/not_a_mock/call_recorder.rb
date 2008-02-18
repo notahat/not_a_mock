@@ -31,7 +31,7 @@ module NotAMock
     # Patch +object+ so that future calls to +method+ will be recorded.
     #
     # You should call Object#track_methods rather than calling this directly.
-    def track_method(object, method)
+    def track_method(object, method) #:nodoc:
       unless @tracked_methods.include?([object, method])
         @tracked_methods << [object, method]
         add_hook(object, method)
@@ -42,7 +42,7 @@ module NotAMock
     # will not be recorded.
     #
     # You should call Object#track_methods rather than calling this directly.
-    def untrack_method(object, method)
+    def untrack_method(object, method) #:nodoc:
       if @tracked_methods.delete([object, method])
         remove_hook(object, method)
       end
