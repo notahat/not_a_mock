@@ -21,30 +21,41 @@ class Object
   end
   alias_method(:untrack_method, :untrack_methods)
   
+  # If passed a symbol and a block, this replaces the named method on this
+  # object with a stub version that evaluates the block and returns the result.
+  #
+  # If passed a hash, this is an alias for stub_methods.
+  def stub_method(method, &block)
+    case method
+      when Symbol
+        NotAMock::CallRecorder.instance.untrack_method(self, method)
+        NotAMock::Stubber.instance.unstub_method(self, method)
+        NotAMock::Stubber.instance.stub_method(self, method, &block)
+        NotAMock::CallRecorder.instance.track_method(self, method)
+      when Hash
+        stub_methods(method)
+      else
+        raise ArgumentError
+    end
+  end
+  
   # Takes a hash of method names mapped to results, and replaces each named
   # method on this object with a stub version returning the corresponding result.
   #
   # Calls to stubbed methods are recorded in the NotAMock::CallRecorder,
   # so you can later make assertions about them as described in
   # NotAMock::Matchers.
-  def stub_methods(methods)
+  def stub_methods(methods, &block)
     methods.each do |method, result|
-      NotAMock::CallRecorder.instance.untrack_method(self, method)
-      NotAMock::Stubber.instance.unstub_method(self, method)
-      NotAMock::Stubber.instance.stub_method(self, method, result)
-      NotAMock::CallRecorder.instance.track_method(self, method)
+      stub_method(method) {|*args| result }
     end
   end
-  alias_method(:stub_method, :stub_methods)
   
   # Takes a hash of method names mapped to exceptions, and replaces each named
   # method on this object with a stub version returning the corresponding exception.
   def stub_methods_to_raise(methods)
     methods.each do |method, exception|
-      NotAMock::CallRecorder.instance.untrack_method(self, method)
-      NotAMock::Stubber.instance.unstub_method(self, method)
-      NotAMock::Stubber.instance.stub_method_to_raise(self, method, exception)
-      NotAMock::CallRecorder.instance.track_method(self, method)
+      stub_method(method) {|*args| raise exception }
     end
   end
   alias_method(:stub_method_to_raise, :stub_methods_to_raise)

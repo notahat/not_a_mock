@@ -105,6 +105,26 @@ describe "A stubbed class method" do
   
 end
 
+describe "A method stubbed with a block" do
+  
+  before do
+    @object = "Hello, world!"
+    @object.stub_method(:length) do |*args|
+      args.reverse
+    end
+  end
+  
+  it "should return the result of the block" do
+    @object.length(1, 2, 3).should == [3, 2, 1]
+  end
+  
+  after do
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
+  end
+  
+end
+
 describe "A method stubbed to raise an exception" do
   
   before do
@@ -128,7 +148,6 @@ describe "A method stubbed to raise an exception" do
   
 end
 
-
 describe "Object#stub_method" do
   
   it "should stub a method with a name ending in '?'" do
@@ -142,6 +161,11 @@ describe "Object#stub_method" do
     @object.stub_method(:[]= => nil)
     @object[0] = 7
     @object.length.should == 0
+  end
+  
+  it "should raise an ArgumentError if called with something other than a symbol or hash" do
+    @object = "Hello, world!"
+    lambda { @object.stub_method(7) }.should raise_error(ArgumentError)
   end
 
   after do
