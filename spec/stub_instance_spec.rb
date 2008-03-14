@@ -33,6 +33,14 @@ describe "A stub instance" do
     @object.width.should == 7
   end
   
+  it "should identify itself as the underlying object" do
+    @object.is_a?(String).should be_true
+    @object.should be_kind_of(String)
+    @object.should be_kind_of(Object)
+    @object.should be_instance_of(String)
+    @object.class.should == String
+  end
+  
   after do
     NotAMock::CallRecorder.instance.reset
     NotAMock::Stubber.instance.reset

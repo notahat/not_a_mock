@@ -78,6 +78,8 @@ class Object
     # Called on a class, creates a stub instance of that class. Takes a hash of
     # method names and their returns values, and creates those methods on the new
     # stub instance.
+    #
+    # See NotAMock::Stub for more details about the returned objects.
     def stub_instance(methods = {})
       NotAMock::Stub.new(self, methods)
     end
