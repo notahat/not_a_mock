@@ -69,7 +69,7 @@ First, install the rspec and rspec_on_rails plugins:
   
 Second, install the not_a_mock plugin:
 
-  ruby script/plugin install http://svn.notahat.com/not_a_mock/trunk
+  ruby script/plugin install git://github.com/notahat/not_a_mock.git
 
 Finally, add the following to your project's spec/spec_helper.rb:
 
