@@ -15,9 +15,10 @@ describe "A stubbed ActiveRecord object" do
     @example.id.should be_an_instance_of(Fixnum)
   end
   
-  it "should return the id for to_param" do
+  it "should return the id as a string for to_param" do
     lambda { @example.to_param }.should_not raise_error(NoMethodError)
-    @example.to_param.should be_an_instance_of(Fixnum)
+    @example.to_param.should be_an_instance_of(String)
+    @example.to_param.should == @example.id.to_s
   end
   
   after do
