@@ -105,6 +105,72 @@ describe "A stubbed class method" do
   
 end
 
+describe "A stubbed private method" do
+  before do
+    class Privateer
+      private
+      
+      def self.stubbed
+        false
+      end
+    end
+    
+    Privateer.stub_method(:stubbed => true)
+  end
+  
+  it "should return the stubbed result" do
+    Privateer.send(:stubbed).should be_true
+  end
+  
+  it "should return the original result after stubbing is removed" do
+    Privateer.unstub_method(:stubbed)
+    Privateer.send(:stubbed).should be_false
+  end
+  
+  it "should return the original result after a reset" do
+    NotAMock::Stubber.instance.reset
+    Privateer.send(:stubbed).should be_false
+  end
+
+  after do
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
+  end
+end
+
+describe "A stubbed protected method" do
+  before :each do
+    class Protector
+      protected
+      
+      def self.stubbed
+        false
+      end
+    end
+    
+    Protector.stub_method(:stubbed => true)
+  end
+  
+  it "should return the stubbed result" do
+    Protector.send(:stubbed).should be_true
+  end
+  
+  it "should return the original result after stubbing is removed" do
+    Protector.unstub_method(:stubbed)
+    Protector.send(:stubbed).should be_false
+  end
+  
+  it "should return the original result after a reset" do
+    NotAMock::Stubber.instance.reset
+    Protector.send(:stubbed).should be_false
+  end
+
+  after do
+    NotAMock::CallRecorder.instance.reset
+    NotAMock::Stubber.instance.reset
+  end
+end
+
 describe "A method stubbed with a block" do
   
   before do

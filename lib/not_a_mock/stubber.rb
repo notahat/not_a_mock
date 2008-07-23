@@ -41,15 +41,17 @@ module NotAMock
   private
 
     def add_hook(object, method, &block)
+      method_exists = method_at_any_level?(object, method.to_s)
       object.meta_eval do
-        alias_method("__unstubbed_#{method}", method) if object.methods.include?(method.to_s)
+        alias_method("__unstubbed_#{method}", method) if method_exists
         define_method(method, &block)
       end
     end
   
     def remove_hook(object, method)
+      method_exists = method_at_any_level?(object, "__unstubbed_#{method}")
       object.meta_eval do
-        if object.methods.include?("__unstubbed_#{method}")
+        if method_exists
           alias_method(method, "__unstubbed_#{method}")
           remove_method("__unstubbed_#{method}")
         else
@@ -57,6 +59,11 @@ module NotAMock
         end
       end
     end
-  
+    
+    def method_at_any_level?(object, method)
+      object.methods.include?(method) ||
+      object.protected_methods.include?(method) ||
+      object.private_methods.include?(method)
+    end
   end
 end
