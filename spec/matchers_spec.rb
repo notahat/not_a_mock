@@ -57,16 +57,16 @@ describe NotAMock::Matchers::MethodMatcher do
   
 end
 
-describe NotAMock::Matchers::ArgsMatcher, " matching calls with arguments " do
+describe NotAMock::Matchers::ArgsMatcher, "matching calls with arguments " do
   
   before do
-    @object = TrackedClass.new({ :method => :length, :args => [1, 2, 3], :result => nil })
+    @object = TrackedClass.new({ :method => :length, :args => [1, [2, 3, 4], 5], :result => nil })
   end
   
   it "should match a called method with the correct arguments" do
-    @matcher = have_received(:length).with(1, 2, 3)
+    @matcher = have_received(:length).with(1, [2, 3, 4], 5)
     @matcher.matches?(@object).should be_true
-    @matcher.negative_failure_message.should == "TrackedClass received length, with args [1, 2, 3]"
+    @matcher.negative_failure_message.should == "TrackedClass received length, with args [1, [2, 3, 4], 5]"
   end
   
   it "should not match a called method with the wrong arguments" do
@@ -74,14 +74,28 @@ describe NotAMock::Matchers::ArgsMatcher, " matching calls with arguments " do
     @matcher.matches?(@object).should be_false
     @matcher.failure_message.should == "TrackedClass received length, but not with args [3, 2, 1]"
   end
-
+  
+  it "should match a called method with a wildcard argument" do
+    @matcher = have_received(:length).with(1, anything, 5)
+    @matcher.matches?(@object).should be_true
+    @matcher.matches?(@object).should be_true
+    @matcher.negative_failure_message.should == "TrackedClass received length, with args [1, anything, 5]"
+  end
+  
+  it "should match a called method with a wildcard argument" do
+    @matcher = have_received(:length).with(1, in_any_order([4, 3, 2]), 5)
+    @matcher.matches?(@object).should be_true
+    @matcher.matches?(@object).should be_true
+    @matcher.negative_failure_message.should == "TrackedClass received length, with args [1, in_any_order([4, 3, 2]), 5]"
+  end
+  
   after do
     NotAMock::CallRecorder.instance.reset
   end
   
 end
 
-describe NotAMock::Matchers::ArgsMatcher, " matching calls without arguments" do
+describe NotAMock::Matchers::ArgsMatcher, "matching calls without arguments" do
   
   before do
     @object = TrackedClass.new(

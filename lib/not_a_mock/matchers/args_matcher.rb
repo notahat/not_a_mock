@@ -4,6 +4,43 @@ module NotAMock
   module Matchers
     # Matcher for
     #  with(...)
+    #
+    # == Argument Matchers
+    #
+    # Not A Mock supports the use of RSpec's patterns for argument matching
+    # in mocks, and extends them. The most useful are listed below.
+    #
+    # === Anything Matcher
+    #
+    # The +anything+ pattern will match any value. For example:
+    #
+    #   object.should have_received(:message).with(1, anything, 3)
+    #
+    # will match the following calls:
+    #
+    #   object.message(1, 2, 3)
+    #   object.message(1, 'Boo!', 3)
+    #
+    # but not:
+    #
+    #    object.message(3, 2, 1)
+    #    object.message(1, 2, 3, 4)
+    #
+    # === In Any Order Matcher
+    #
+    # The +in_any_order+ pattern will match an array argument, but won't care
+    # about order of elements in the array. For example:
+    #
+    #   object.should have_received(:message).with(in_any_order([3, 2, 1]))
+    #
+    # will match the following calls:
+    #
+    #   object.message([3, 2, 1])
+    #   object.message([1, 2, 3])
+    #
+    # but not:
+    #
+    #   object.message([1, 2, 3, 4])
     class ArgsMatcher < CallMatcher
   
       def initialize(args, parent = nil)
@@ -12,7 +49,7 @@ module NotAMock
       end
   
       def matches_without_parents?
-        @calls = @parent.calls.select {|entry| entry[:args] == @args }
+        @calls = @parent.calls.select {|entry| @args == entry[:args] }
         !@calls.empty?
       end
   

@@ -20,6 +20,8 @@ module NotAMock
   # 
   #   object.should have_received(:message).with(arg1, arg2, ...)
   #   object.should have_received(:message).without_args
+  #
+  # See NotAMock::Matchers::ArgsMatcher for more information.
   # 
   # == Return Value Assertions
   # 

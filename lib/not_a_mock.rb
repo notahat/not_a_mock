@@ -1,4 +1,5 @@
 require 'not_a_mock/active_record_extensions'
+require 'not_a_mock/argument_constraint_extensions'
 require 'not_a_mock/call_recorder'
 require 'not_a_mock/matchers'
 require 'not_a_mock/matchers/anything_matcher'
