@@ -6,6 +6,10 @@ class Object
   # See NotAMock::Matchers for info on how to test which methods have been
   # called, with what arguments, etc.
   def track_methods(*methods)
+    if methods.empty?
+      self.public_methods(false).map {|method_name| methods << method_name.to_s.to_sym}
+    end
+
     methods.each do |method|
       NotAMock::CallRecorder.instance.track_method(self, method)
     end

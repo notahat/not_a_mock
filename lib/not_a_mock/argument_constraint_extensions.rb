@@ -2,13 +2,6 @@ require 'set'
 
 module Spec #:nodoc:
   module Mocks #:nodoc:
-
-    class AnyArgConstraint #:nodoc:
-      def inspect
-        'anything'
-      end
-    end
-    
     class AnyOrderArgConstraint #:nodoc:
       def initialize(array)
         @array = array
@@ -23,11 +16,17 @@ module Spec #:nodoc:
       end
     end
     
-    module ArgumentConstraintMatchers #:nodoc:
+    module ArgumentMatchers #:nodoc:
+      class AnyArgMatcher #:nodoc:
+        def inspect
+          'anything'
+        end
+      end
+
       def in_any_order(array)
         Spec::Mocks::AnyOrderArgConstraint.new(array)
       end
     end
-    
+
   end
 end
