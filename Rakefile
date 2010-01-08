@@ -29,7 +29,7 @@ begin
     gemspec.name = "not_a_mock"
     gemspec.summary = "A cleaner and DRYer alternative to mocking and stubbing with RSpec"
     gemspec.email = "pete@notahat.com"
-    gemspec.homepage = "http://github.com/notahat/not_a_mock"
+    gemspec.homepage = "http://notahat.com/not_a_mock"
     gemspec.authors = ["Pete Yandell"]
   end
   Jeweler::GemcutterTasks.new
