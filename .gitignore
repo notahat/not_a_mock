@@ -1,2 +1,4 @@
 rdoc
 coverage
+*.gemspec
+pkg
