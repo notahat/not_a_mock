@@ -61,6 +61,25 @@ describe "A recorded method" do
     @recorder.calls.should_not include(:object => @object, :method => :my_method, :args => ["argument 2"], :result => "result")
   end
   
+  it "should be recorded even when it throws an error" do
+	old_version = TrackedClass.instance_method(:my_method)
+	
+	TrackedClass.send(:define_method, :my_method) do |args|
+		raise 'ANY ERROR'
+	end
+	
+	@object = TrackedClass.new
+	@object.track_method(:my_method)
+	
+	begin
+		lambda{ @object.my_method('argument 1') }.should raise_error
+	
+		@recorder.calls_by_object(@object).size.should === 1
+	ensure
+		TrackedClass.send(:define_method, :my_method, old_version)
+	end
+  end
+  
   after do
     @recorder.reset
   end
