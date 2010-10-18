@@ -71,7 +71,7 @@ module NotAMock
       end
     end
 
-    def record_and_send(object, method, args)
+    def record_and_send(object, method, args)		
 	  begin    	
         result = object.send("__unlogged_#{method}", *args)
       ensure

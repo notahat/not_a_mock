@@ -62,22 +62,15 @@ describe "A recorded method" do
   end
   
   it "should be recorded even when it throws an error" do
-	old_version = TrackedClass.instance_method(:my_method)
-	
-	TrackedClass.send(:define_method, :my_method) do |args|
-		raise 'ANY ERROR'
-	end
-	
-	@object = TrackedClass.new
-	@object.track_method(:my_method)
-	
-	begin
-		lambda{ @object.my_method('argument 1') }.should raise_error
-	
-		@recorder.calls_by_object(@object).size.should === 1
-	ensure
-		TrackedClass.send(:define_method, :my_method, old_version)
-	end
+    @object.untrack_method(:my_method)
+
+    def @object.my_method(arg); raise 'ANY ERROR'; end
+
+    @object.track_method(:my_method)
+
+    lambda{ @object.my_method('argument 1') }.should raise_error
+
+    @recorder.calls_by_object(@object).size.should === 1
   end
   
   after do
