@@ -61,6 +61,18 @@ describe "A recorded method" do
     @recorder.calls.should_not include(:object => @object, :method => :my_method, :args => ["argument 2"], :result => "result")
   end
   
+  it "should be recorded even when it throws an error" do
+    @object.untrack_method(:my_method)
+
+    def @object.my_method(arg); raise 'ANY ERROR'; end
+
+    @object.track_method(:my_method)
+
+    lambda{ @object.my_method('argument 1') }.should raise_error
+
+    @recorder.calls_by_object(@object).size.should === 1
+  end
+  
   after do
     @recorder.reset
   end

@@ -71,10 +71,14 @@ module NotAMock
       end
     end
 
-    def record_and_send(object, method, args)
-      result = object.send("__unlogged_#{method}", *args)
-      @calls << { :object => object, :method => method, :args => args, :result => result }
-      result
+    def record_and_send(object, method, args)		
+	  begin    	
+        result = object.send("__unlogged_#{method}", *args)
+      ensure
+		@calls << { :object => object, :method => method, :args => args, :result => result }
+      end
+	  
+	  result
     end
   
     def remove_hook(object, method)
